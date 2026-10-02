@@ -54,6 +54,8 @@ Parsing rules:
 - The request line `"%r"` is split into method, path and protocol. The path is
   kept exactly as it appears in the log (not URL-decoded, query string
   included).
+- The status must be between `100` and `599`. Any other value makes the line
+  malformed.
 - Empty lines are ignored and are not counted as malformed.
 
 ### Malformed lines
