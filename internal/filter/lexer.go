@@ -61,18 +61,19 @@ type token struct {
 
 // Error is a filter error at a specific column of the expression.
 type Error struct {
-	Col int // 1-based
-	Msg string
+	Expr string // the whole expression, set by Compile
+	Col  int    // 1-based
+	Msg  string
 }
 
 func (e *Error) Error() string {
 	return fmt.Sprintf("%s at column %d", e.Msg, e.Col)
 }
 
-// Caret renders expr with a caret under the offending column, each line
-// indented by two spaces.
-func (e *Error) Caret(expr string) string {
-	return "  " + expr + "\n  " + strings.Repeat(" ", e.Col-1) + "^"
+// Caret renders the expression with a caret under the offending column,
+// each line indented by two spaces.
+func (e *Error) Caret() string {
+	return "  " + e.Expr + "\n  " + strings.Repeat(" ", e.Col-1) + "^"
 }
 
 func errorf(col int, format string, args ...any) *Error {
@@ -94,7 +95,7 @@ var oneCharOps = map[rune]tokenKind{
 }
 
 // lex splits expr into tokens, ending with a tokEOF token.
-func lex(expr string) ([]token, error) {
+func lex(expr string) ([]token, *Error) {
 	src := []rune(expr)
 	var toks []token
 
@@ -163,7 +164,7 @@ func lex(expr string) ([]token, error) {
 // lexString reads a double-quoted string at the start of src and returns its
 // unescaped contents and the number of runes consumed. `\"` and `\\` are
 // escapes; any other backslash is kept as-is so that regexes like `\d` work.
-func lexString(src []rune, col int) (string, int, error) {
+func lexString(src []rune, col int) (string, int, *Error) {
 	var b strings.Builder
 	for i := 1; i < len(src); i++ {
 		switch src[i] {

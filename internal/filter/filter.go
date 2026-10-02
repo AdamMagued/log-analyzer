@@ -18,16 +18,21 @@ type Filter struct {
 
 // Compile parses and type-checks expr. Errors are of type *Error.
 func Compile(expr string) (*Filter, error) {
+	root, err := compile(expr)
+	if err != nil {
+		err.Expr = expr
+		return nil, err
+	}
+	return &Filter{root: root}, nil
+}
+
+func compile(expr string) (node, *Error) {
 	toks, err := lex(expr)
 	if err != nil {
 		return nil, err
 	}
 	p := &parser{toks: toks}
-	root, err := p.parse()
-	if err != nil {
-		return nil, err
-	}
-	return &Filter{root: root}, nil
+	return p.parse()
 }
 
 // Match reports whether e satisfies the filter.
@@ -67,7 +72,7 @@ var fields = map[string]field{
 }
 
 // compare type-checks a single comparison and builds its evaluation node.
-func compare(fieldTok, op, value token) (node, error) {
+func compare(fieldTok, op, value token) (node, *Error) {
 	f, ok := fields[fieldTok.Text]
 	if !ok {
 		return nil, errorf(fieldTok.Col, "unknown field %q", fieldTok.Text)

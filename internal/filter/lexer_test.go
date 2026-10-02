@@ -99,9 +99,9 @@ func TestLexErrors(t *testing.T) {
 }
 
 func TestErrorCaret(t *testing.T) {
-	err := &Error{Col: 4, Msg: "boom"}
+	err := &Error{Expr: "a = b", Col: 4, Msg: "boom"}
 	want := "  a = b\n     ^"
-	if got := err.Caret("a = b"); got != want {
+	if got := err.Caret(); got != want {
 		t.Errorf("Caret() =\n%s\nwant\n%s", got, want)
 	}
 	if got, want := err.Error(), "boom at column 4"; got != want {

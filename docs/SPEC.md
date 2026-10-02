@@ -279,15 +279,33 @@ $ log-analyzer -m list -f 'method == "GET" && status == 5xx' testdata/test.log
 $ log-analyzer --format json -f 'status == 5xx' testdata/test.log
 {
   "total": 238,
-  "time_range": {"start": "2026-10-01T18:56:02-06:00", "end": "2026-10-01T18:56:02-06:00"},
+  "time_range": {
+    "start": "2026-10-01T18:56:02-06:00",
+    "end": "2026-10-01T18:56:02-06:00"
+  },
   "requests_per_minute": 238,
   "status": {
-    "5xx": {"count": 238, "percent": 100, "codes": {"500": 39, "501": 44, "502": 55, "503": 52, "504": 48}}
+    "5xx": {
+      "count": 238,
+      "percent": 100,
+      "codes": {
+        "500": 39,
+        "501": 44,
+        "502": 55,
+        "503": 52,
+        "504": 48
+      }
+    }
   }
 }
 ```
 
-When there are no matching entries, `time_range` is `null`.
+The JSON summary is indented with two spaces. When there are no matching
+entries, `time_range` is `null`, `status` is `{}`, and the text summary omits
+the time range and status code lines.
+
+`--help` prints usage to stdout and exits with code `0`. With `--strict` in
+list mode, lines printed before the malformed line remain in the output.
 
 ## Non-goals
 
