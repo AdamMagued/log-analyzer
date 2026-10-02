@@ -314,3 +314,10 @@ func TestShortAndLongFlagsAreEquivalent(t *testing.T) {
 		t.Errorf("short and long flags produced different output")
 	}
 }
+
+func TestHelpMatchesReadme(t *testing.T) {
+	readme := readFixture(t, filepath.Join(repoRoot, "README.md"))
+	if !strings.Contains(readme, Usage) {
+		t.Errorf("README.md does not contain the --help output:\n%s", Usage)
+	}
+}
